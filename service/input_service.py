@@ -6,13 +6,10 @@ def on_click(x, y, button, pressed):
         save_entry('MouseClicks')
 
 def on_scroll(x, y, dx, dy):
-        save_entry("MouseScroll")
+    save_entry("MouseScroll")
 
 def on_press(key):
-    try:
-        save_entry('KeyPresses')
-    except Exception as e:
-        print(f"Erro ao salvar entrada: {e}")
+    save_entry('KeyPresses')
 
 
 def start_listners():
