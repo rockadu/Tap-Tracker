@@ -1,21 +1,18 @@
-from service.keyboard_service import start_keyboard_listener
-from service.mouse_service import start_mouse_listener
+from service.input_service import start_listners
 from service.thread_service import ensure_cicle, running
 import threading
 import time
 
-def start_listeners():
-    """Inicia os ouvintes de mouse e teclado."""
-    start_mouse_listener()
-    start_keyboard_listener()
+def start_monitoring():
+    start_listners()
 
 if __name__ == "__main__":
     try:
-        listeners_thread = threading.Thread(target=start_listeners)
-        listeners_thread.start()
+        # Inicie os ouvintes diretamente na main thread
 
         ensure_thread = threading.Thread(target=ensure_cicle)
         ensure_thread.start()
+        start_monitoring()  
 
         while True:
             time.sleep(1)  # Mantém o programa principal rodando
