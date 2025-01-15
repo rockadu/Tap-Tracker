@@ -4,6 +4,7 @@ import win32process
 import psutil
 import time
 import threading
+import os
 
 def get_active_window_title():
     window_handle = win32gui.GetForegroundWindow()
@@ -25,8 +26,9 @@ def monitor_window_changes():
     while True:
         program_name = get_active_window_program()
         current_window_title = get_active_window_title()
+        loggedUser = os.getlogin()
         if current_window_title != last_window_title and current_window_title:
-            insert_window_activity(current_window_title, program_name)
+            insert_window_activity(loggedUser, current_window_title, program_name)
             last_window_title = current_window_title
         time.sleep(1)  # Verifica a cada segundo
 

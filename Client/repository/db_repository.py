@@ -17,20 +17,24 @@ def setup_database():
         
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS ActivityCount (
-                Timestamp TEXT PRIMARY KEY,
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Timestamp TEXT,
                 LoggedUser TEXT,
                 MouseClicks INTEGER DEFAULT 0,
                 KeyPresses INTEGER DEFAULT 0,
-                MouseScroll INTEGER DEFAULT 0
+                MouseScroll INTEGER DEFAULT 0,
+                Sync INTEGER DEFAULT 0 
             )
         """)
 
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS WindowActivity (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                LoggedUser TEXT NOT NULL,
                 StartTime TEXT NOT NULL,
                 WindowTitle TEXT NOT NULL,
-                ProgramName TEXT NOT NULL
+                ProgramName TEXT NOT NULL,
+                Sync INTEGER DEFAULT 0 
             )
         """)
 
@@ -67,14 +71,35 @@ def save_entry(type):
     conn.commit()
     conn.close()
 
-def insert_window_activity(window_title, program_name):
+def insert_window_activity(logged_user, window_title, program_name):
     conn = get_db_connection()
     cursor = conn.cursor()
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     cursor.execute("""
-        INSERT INTO WindowActivity (StartTime, WindowTitle, ProgramName)
-        VALUES (?, ?, ?)
-    """, (timestamp, window_title, program_name))
+        INSERT INTO WindowActivity (LoggedUser, StartTime, WindowTitle, ProgramName)
+        VALUES (?, ?, ?, ?)
+    """, (logged_user, timestamp, window_title, program_name))
+    conn.commit()
+    conn.close()
+
+def get_activitys(size = 10):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+            SELECT Id, Timestamp, LoggedUser, MouseClicks, KeyPresses, MouseScroll 
+            FROM ActivityCount 
+            WHERE Sync = 0 
+            LIMIT ?
+        """, (size,))
+    records = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    return records;
+
+def update_synced_activity(record_ids):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.executemany("UPDATE ActivityCount SET Sync = 1 WHERE Id = ?", [(record_id,) for record_id in record_ids])
     conn.commit()
     conn.close()
     
