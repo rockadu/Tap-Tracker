@@ -1,4 +1,5 @@
 from repository.db_repository import ensure_minute_entry
+from service.sync_service import sync_activity_data
 import os
 import time
 
@@ -7,5 +8,6 @@ loggedUser = os.getlogin()
 
 def ensure_cicle():
     while running:
-        ensure_minute_entry(loggedUser)  # Garante que entradas vazias sejam salvas
+        ensure_minute_entry(loggedUser)
+        sync_activity_data()
         time.sleep(1)

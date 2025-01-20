@@ -34,7 +34,8 @@ def setup_database():
                 StartTime TEXT NOT NULL,
                 WindowTitle TEXT NOT NULL,
                 ProgramName TEXT NOT NULL,
-                Sync INTEGER DEFAULT 0 
+                ActivityDuration INTEGER DEFAULT 0,
+                Sync INTEGER DEFAULT 0
             )
         """)
 
@@ -83,14 +84,17 @@ def insert_window_activity(logged_user, window_title, program_name):
     conn.close()
 
 def get_activitys(size = 10):
+    current_minute = datetime.datetime.now().replace(second=0, microsecond=0)
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
             SELECT Id, Timestamp, LoggedUser, MouseClicks, KeyPresses, MouseScroll 
             FROM ActivityCount 
             WHERE Sync = 0 
+            AND Timestamp < ?
+            ORDER BY Timestamp ASC 
             LIMIT ?
-        """, (size,))
+        """, (current_minute, size))
     records = cursor.fetchall()
     conn.commit()
     conn.close()
@@ -100,6 +104,28 @@ def update_synced_activity(record_ids):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.executemany("UPDATE ActivityCount SET Sync = 1 WHERE Id = ?", [(record_id,) for record_id in record_ids])
+    conn.commit()
+    conn.close()
+
+def get_window_activitys(size=10):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT Id, StartTime, LoggedUser, WindowTitle, ProgramName
+        FROM WindowActivity
+        WHERE Sync = 0
+        ORDER BY StartTime ASC
+        LIMIT ?
+    """, (size))
+    records = cursor.fetchall()
+    conn.commit()
+    conn.close()
+    return records
+
+def update_synced_window(record_ids):
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.executemany("UPDATE WindowActivity SET Sync = 1 WHERE Id = ?", [(record_id,) for record_id in record_ids])
     conn.commit()
     conn.close()
     
