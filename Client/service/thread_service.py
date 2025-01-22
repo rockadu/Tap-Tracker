@@ -1,4 +1,4 @@
-from repository.db_repository import ensure_minute_entry
+from repository.input_activity_repository import ensure_minute_entry
 from service.sync_service import sync_activity_data
 import os
 import time

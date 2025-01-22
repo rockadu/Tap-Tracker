@@ -1,4 +1,4 @@
-from repository.db_repository import insert_window_activity
+from repository.window_activity_repository import insert_window_activity
 import win32gui
 import win32process
 import psutil

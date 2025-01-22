@@ -2,7 +2,8 @@ import json
 import requests
 import time
 
-from repository.db_repository import get_activitys, update_synced_activity, get_window_activitys, update_synced_window
+from repository.input_activity_repository import get_activitys, update_synced_activity
+from repository.window_activity_repository import get_window_activitys, update_synced_window
 
 MAX_RETRIES = 5
 

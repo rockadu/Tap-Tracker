@@ -1,16 +1,16 @@
-from repository.db_repository import save_entry 
+from repository.input_activity_repository import increment 
 from pynput import mouse, keyboard
 
 def on_click(x, y, button, pressed):
     if pressed:
-        save_entry('MouseClicks')
+        increment('MouseClicks')
 
 def on_scroll(x, y, dx, dy):
-        save_entry("MouseScroll")
+        increment("MouseScroll")
 
 def on_press(key):
     try:
-        save_entry('KeyPresses')
+        increment('KeyPresses')
     except Exception as e:
         print(f"Erro ao salvar entrada: {e}")
 
