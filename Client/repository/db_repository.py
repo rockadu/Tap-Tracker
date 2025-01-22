@@ -1,5 +1,4 @@
 import sqlite3
-from datetime import datetime
 import json
 import os
 
@@ -8,9 +7,11 @@ with open("config.json", "r") as file:
 
 db_name = data["db_name"]
 
+# Cria um conexão com o banco de dados local
 def get_db_connection():
     return sqlite3.connect(db_name)
 
+# Prepara a base de dados se ainda não existe
 def setup_database():
     with get_db_connection() as db_connection:
         cursor = db_connection.cursor()
@@ -40,6 +41,7 @@ def setup_database():
         """)
 
         db_connection.commit()
-    
+
+# Cria a base de dados se ainda não existe
 if os.path.exists(db_name) == False:
     setup_database()

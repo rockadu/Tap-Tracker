@@ -6,21 +6,19 @@ import time
 import threading
 import os
 
+# Busca o titulo da janela ativa
 def get_active_window_title():
     window_handle = win32gui.GetForegroundWindow()
     return win32gui.GetWindowText(window_handle)
 
+# Busca o nome do programa ativo
 def get_active_window_program():
-    # Obtém o handle da janela ativa
     window_handle = win32gui.GetForegroundWindow()
-    
-    # Obtém o PID (Process ID) associado à janela ativa
     _, pid = win32process.GetWindowThreadProcessId(window_handle)
-    
-    # Obtém o nome do processo usando psutil
     process = psutil.Process(pid)
-    return process.name()  # Retorna o nome do programa
+    return process.name()
 
+# Monitora a mudança de janela ativa a cada 1 segundo
 def monitor_window_changes():
     last_window_title = None
     while True:
@@ -30,8 +28,9 @@ def monitor_window_changes():
         if current_window_title != last_window_title and current_window_title:
             insert_window_activity(loggedUser, current_window_title, program_name)
             last_window_title = current_window_title
-        time.sleep(1)  # Verifica a cada segundo
+        time.sleep(1)
 
+# Inicia uma thread para monitorar a mudança de janela
 def start_window_monitor():
     monitor_thread = threading.Thread(target=monitor_window_changes, daemon=True)
     monitor_thread.start()

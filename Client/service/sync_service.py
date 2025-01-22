@@ -7,11 +7,13 @@ from repository.window_activity_repository import get_window_activitys, update_s
 
 MAX_RETRIES = 5
 
+# Recupera o Json de config
 with open("config.json", "r") as file:
     data = json.load(file)  
 
 server_url = data["server"]
 
+# Recupera os dados de mouse não sincronizados e envia para o servidor
 def sync_activity_data():
     records = get_activitys()
 
@@ -35,21 +37,21 @@ def sync_activity_data():
     try:
         response = requests.post(server_url, json=data_batch)
         if response.status_code == 200:
-            # Marcar os registros do lote como sincronizados
             update_synced_activity(record_ids)
             print(f"Successfully synced {len(record_ids)} records.")
-            retries = 0  # Resetar contagem de retentativas após sucesso
+            retries = 0
         else:
             print(f"Failed to sync records. Status code: {response.status_code}")
             retries += 1
             if retries > MAX_RETRIES:
                 print("Max retries reached. Sync will resume later.")
                 return
-            time.sleep(5 * (2 ** retries))  # Backoff exponencial
+            time.sleep(5 * (2 ** retries))
     except requests.ConnectionError:
         print("Connection error. Sync will resume later.")
         return
 
+# Recupera os dados de janela não sincronizados e envia para o servidor
 def sync_window_activity_data():
     records = get_window_activitys()
 

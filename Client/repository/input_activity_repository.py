@@ -2,6 +2,7 @@ from db_repository import get_db_connection
 
 import datetime
 
+# Incrementa em 1 o evento (Mouse/Scroll/Tecla) sensorizado
 def increment(type):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 
@@ -18,6 +19,7 @@ def increment(type):
     conn.commit()
     conn.close()
 
+# Garante a existencia do minuto mesmo sem haver input
 def ensure_minute_entry(loggedUser):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -31,6 +33,7 @@ def ensure_minute_entry(loggedUser):
     conn.commit()
     conn.close()
 
+# Recupera do banco os eventos de input que ainda não foram sincronizados com o servidor
 def get_activitys(size = 10):
     current_minute = datetime.datetime.now().replace(second=0, microsecond=0)
     conn = get_db_connection()
@@ -48,6 +51,7 @@ def get_activitys(size = 10):
     conn.close()
     return records;
 
+# Atualiza os eventos que foram sincronizados com o servidor
 def update_synced_activity(record_ids):
     conn = get_db_connection()
     cursor = conn.cursor()

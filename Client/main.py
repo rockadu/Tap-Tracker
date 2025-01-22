@@ -11,8 +11,6 @@ def start_monitoring():
 
 if __name__ == "__main__":
     try:
-        # Inicie os ouvintes diretamente na main thread
-
         ensure_thread = threading.Thread(target=ensure_cicle)
         ensure_thread.start()
         
@@ -22,10 +20,10 @@ if __name__ == "__main__":
         sync_thread.start()
 
         while running:
-            time.sleep(1)  # Mantém o programa principal rodando
+            time.sleep(1)
 
     except KeyboardInterrupt:
         print("Encerrando threads...")
-        running = False  # Sinaliza para as threads encerrarem
-        ensure_thread.join()  # Aguarda o término da thread ensure_cicle
+        running = False
+        ensure_thread.join()
         print("Programa encerrado.")

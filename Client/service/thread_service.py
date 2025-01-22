@@ -6,8 +6,17 @@ import time
 running = True 
 loggedUser = os.getlogin()
 
+# Garante a existencia da linha no minuto atual e sincroniza os dados com o servidor a cada segundo
 def ensure_cicle():
+    last_sync_time = time.time()  # Marca o tempo inicial
+    sync_interval = 15  # Intervalo em segundos para sincronização
+
     while running:
         ensure_minute_entry(loggedUser)
-        sync_activity_data()
-        time.sleep(1)
+        
+        # Verifica se passaram 15 segundos desde a última sincronização
+        if time.time() - last_sync_time >= sync_interval:
+            sync_activity_data()
+            last_sync_time = time.time()  # Atualiza o tempo da última sincronização
+        
+        time.sleep(1) 

@@ -2,6 +2,7 @@ from db_repository import get_db_connection
 
 import datetime
 
+# Insere um evento de nova tela ativa
 def insert_window_activity(logged_user, window_title, program_name):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -13,6 +14,7 @@ def insert_window_activity(logged_user, window_title, program_name):
     conn.commit()
     conn.close()
 
+# Recupera os eventos de tela que não estão sincronizados com o servidor
 def get_window_activitys(size=10):
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -28,6 +30,7 @@ def get_window_activitys(size=10):
     conn.close()
     return records
 
+# Atualiza os eventos que já foram sincronizados no servidor
 def update_synced_window(record_ids):
     conn = get_db_connection()
     cursor = conn.cursor()
