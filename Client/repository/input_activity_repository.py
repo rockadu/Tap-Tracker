@@ -4,6 +4,7 @@ import datetime
 
 # Incrementa em 1 o evento (Mouse/Scroll/Tecla) sensorizado
 def increment(type):
+    print(f"Inserindo um incremento de input para o evento {type}")
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     query = """
@@ -18,9 +19,11 @@ def increment(type):
         
     conn.commit()
     conn.close()
+    print(f"Inserção de incremento para o evento {type} concluida")
 
 # Garante a existencia do minuto mesmo sem haver input
 def ensure_minute_entry(loggedUser):
+    print("Criando novo registro para novo minuto")
     conn = get_db_connection()
     cursor = conn.cursor()
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")
@@ -32,9 +35,11 @@ def ensure_minute_entry(loggedUser):
 
     conn.commit()
     conn.close()
+    print("Novo registro criado")
 
 # Recupera do banco os eventos de input que ainda não foram sincronizados com o servidor
 def get_activitys(size = 10):
+    print("Recuperando eventos para sincronizar com servidor")
     current_minute = datetime.datetime.now().replace(second=0, microsecond=0)
     conn = get_db_connection()
     cursor = conn.cursor()
@@ -49,12 +54,15 @@ def get_activitys(size = 10):
     records = cursor.fetchall()
     conn.commit()
     conn.close()
+    print("Eventos recuperados")
     return records;
 
 # Atualiza os eventos que foram sincronizados com o servidor
 def update_synced_activity(record_ids):
+    print("Marcando eventos como sincronizados")
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.executemany("UPDATE ActivityCount SET Sync = 1 WHERE Id = ?", [(record_id,) for record_id in record_ids])
     conn.commit()
     conn.close()
+    print("Eventos marcados")

@@ -9,7 +9,9 @@ MAX_RETRIES = 5
 
 # Recupera o Json de config
 with open("config.json", "r") as file:
+    print("Recuperando config json")
     data = json.load(file)  
+    print("Config json recuperado")
 
 server_url = data["server"]
 
@@ -35,20 +37,21 @@ def sync_activity_data():
         record_ids.append(record_id)
 
     try:
+        print("Enviando registros de input para o servidor")
         response = requests.post(server_url, json=data_batch)
         if response.status_code == 200:
             update_synced_activity(record_ids)
-            print(f"Successfully synced {len(record_ids)} records.")
+            print(f"{len(record_ids)} registros sincronizados")
             retries = 0
         else:
-            print(f"Failed to sync records. Status code: {response.status_code}")
+            print(f"Falha ao sincronizar dados de mouse. Status code: {response.status_code}")
             retries += 1
             if retries > MAX_RETRIES:
-                print("Max retries reached. Sync will resume later.")
+                print("Maximo de tentatias de sincronização de input alcançadas, será tentado posteriormente.")
                 return
             time.sleep(5 * (2 ** retries))
     except requests.ConnectionError:
-        print("Connection error. Sync will resume later.")
+        print("Erro no envio de registros para o servidor")
         return
 
 # Recupera os dados de janela não sincronizados e envia para o servidor
@@ -72,12 +75,13 @@ def sync_window_activity_data():
         record_ids.append(record_id)
 
     try:
+        print("Enviando registros de janela para o servidor")
         response = requests.post(f"{server_url}/window-activity", json=data_batch)
         if response.status_code == 200:
             update_synced_window(record_ids)
-            print(f"Successfully synced {len(record_ids)} window activity records.")
+            print(f"{len(record_ids)} registros de janela sincronizados.")
         else:
-            print(f"Failed to sync window activity records. Status code: {response.status_code}")
+            print(f"Falha ao enviar os registros de janela para o servidor. Status code: {response.status_code}")
     except requests.ConnectionError:
-        print("Connection error. Sync will resume later.")
+        print("Falha na conexão, será tentado posteriormente")
         return

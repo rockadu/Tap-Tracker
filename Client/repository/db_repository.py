@@ -9,6 +9,7 @@ db_name = data["db_name"]
 
 # Cria um conexão com o banco de dados local
 def get_db_connection():
+    print("Conectando na base e retornando para o solicitante")
     return sqlite3.connect(db_name)
 
 # Prepara a base de dados se ainda não existe
@@ -16,6 +17,7 @@ def setup_database():
     with get_db_connection() as db_connection:
         cursor = db_connection.cursor()
         
+        print("Criando tabela ActivityCount")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS ActivityCount (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -27,7 +29,9 @@ def setup_database():
                 Sync INTEGER DEFAULT 0 
             )
         """)
+        print("Tabela ActivityCount criada")
 
+        print("Criando tabela WindowActivity")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS WindowActivity (
                 Id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -39,9 +43,11 @@ def setup_database():
                 Sync INTEGER DEFAULT 0
             )
         """)
+        print("Tabela WindowActivity criada")
 
         db_connection.commit()
 
 # Cria a base de dados se ainda não existe
 if os.path.exists(db_name) == False:
+    print("Base não encontrada, criando...")
     setup_database()
