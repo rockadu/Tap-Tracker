@@ -1,6 +1,6 @@
-from db_repository import get_db_connection
+from repository.db_repository import get_db_connection
 
-import datetime
+from datetime import datetime
 
 # Incrementa em 1 o evento (Mouse/Scroll/Tecla) sensorizado
 def increment(type):
@@ -40,7 +40,7 @@ def ensure_minute_entry(loggedUser):
 # Recupera do banco os eventos de input que ainda não foram sincronizados com o servidor
 def get_activitys(size = 10):
     print("Recuperando eventos para sincronizar com servidor")
-    current_minute = datetime.datetime.now().replace(second=0, microsecond=0)
+    current_minute = datetime.now().replace(second=0, microsecond=0)
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""

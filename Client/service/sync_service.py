@@ -15,6 +15,10 @@ with open("config.json", "r") as file:
 
 server_url = data["server"]
 
+def run_sync():
+    sync_window_activity_data()
+    sync_window_activity_data()
+
 # Recupera os dados de mouse não sincronizados e envia para o servidor
 def sync_activity_data():
     records = get_activitys()

@@ -1,6 +1,6 @@
-from db_repository import get_db_connection
+from repository.db_repository import get_db_connection
 
-import datetime
+from datetime import datetime
 
 # Insere um evento de nova tela ativa
 def insert_window_activity(logged_user, window_title, program_name):
@@ -14,7 +14,7 @@ def insert_window_activity(logged_user, window_title, program_name):
     """, (logged_user, timestamp, window_title, program_name))
     conn.commit()
     conn.close()
-    print("Evento de janela ativa realizada {window_title}")
+    print(f"Evento de janela ativa realizada {window_title}")
 
 # Recupera os eventos de tela que não estão sincronizados com o servidor
 def get_window_activitys(size=10):
@@ -27,7 +27,7 @@ def get_window_activitys(size=10):
         WHERE Sync = 0
         ORDER BY StartTime ASC
         LIMIT ?
-    """, (size))
+    """, (size,))
     records = cursor.fetchall()
     conn.commit()
     conn.close()
