@@ -20,13 +20,12 @@ def setup_database():
         print("Criando tabela ActivityCount")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS ActivityCount (
-                Id INTEGER PRIMARY KEY AUTOINCREMENT,
-                Timestamp TEXT,
+                Timestamp TEXT PRIMARY KEY,
                 LoggedUser TEXT,
                 MouseClicks INTEGER DEFAULT 0,
                 KeyPresses INTEGER DEFAULT 0,
                 MouseScroll INTEGER DEFAULT 0,
-                Sync INTEGER DEFAULT 0 
+                Sync INTEGER DEFAULT 0
             )
         """)
         print("Tabela ActivityCount criada")

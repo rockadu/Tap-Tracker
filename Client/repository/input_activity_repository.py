@@ -44,7 +44,7 @@ def get_activitys(size = 10):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
-            SELECT Id, Timestamp, LoggedUser, MouseClicks, KeyPresses, MouseScroll 
+            SELECT Timestamp, LoggedUser, MouseClicks, KeyPresses, MouseScroll 
             FROM ActivityCount 
             WHERE Sync = 0 
             AND Timestamp < ?
@@ -58,11 +58,11 @@ def get_activitys(size = 10):
     return records;
 
 # Atualiza os eventos que foram sincronizados com o servidor
-def update_synced_activity(record_ids):
+def update_synced_activity(times):
     print("Marcando eventos como sincronizados")
     conn = get_db_connection()
     cursor = conn.cursor()
-    cursor.executemany("UPDATE ActivityCount SET Sync = 1 WHERE Id = ?", [(record_id,) for record_id in record_ids])
+    cursor.executemany("UPDATE ActivityCount SET Sync = 1 WHERE Timestamp = ?", [(time,) for time in times])
     conn.commit()
     conn.close()
     print("Eventos marcados")
