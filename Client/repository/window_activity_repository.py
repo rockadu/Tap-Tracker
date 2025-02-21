@@ -34,6 +34,31 @@ def get_window_activitys(size=10):
     print("Registros de janelas recuperados")
     return records
 
+def get_last_window_activity():
+    print("Recuperando último registro de janela")
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT Id, StartTime
+        FROM WindowActivity
+        ORDER BY StartTime DESC
+        LIMIT 1
+    """)
+    record = cursor.fetchone()
+    conn.commit()
+    conn.close()
+    print("Último registro de janela recuperado")
+    return record
+
+def update_duration_lastWindow_activity(duration, record_id):
+    print(f"Atualizando duração: {duration} segundos para o registro {record_id}")
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("UPDATE WindowActivity SET ActivityDuration = ? WHERE Id = ?", (int(duration), int(record_id)))
+    conn.commit()
+    conn.close()
+    print("Duração do último registro de janela atualizado")
+
 # Atualiza os eventos que já foram sincronizados no servidor
 def update_synced_window(record_ids):
     print("Atualizando registro de janelas para sincronizado")

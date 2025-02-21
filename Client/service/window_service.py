@@ -1,4 +1,5 @@
-from repository.window_activity_repository import insert_window_activity
+from repository.window_activity_repository import insert_window_activity, get_last_window_activity, update_duration_lastWindow_activity
+from datetime import datetime
 import win32gui
 import win32process
 import psutil
@@ -18,6 +19,16 @@ def get_active_window_program():
     process = psutil.Process(pid)
     return process.name()
 
+# Verifica se a janela ativa mudou e atualiza o tempo de duração da janela anterior
+def check_time_last_window():
+    last_window = get_last_window_activity()
+    if last_window:
+        id, start_time_str = last_window
+        start_time = datetime.strptime(start_time_str, "%Y-%m-%d %H:%M:%S")
+        now = datetime.now()
+        duration = (now - start_time).total_seconds()
+        update_duration_lastWindow_activity(duration, id)
+
 # Monitora a mudança de janela ativa a cada 1 segundo
 def monitor_window_changes():
     last_window_title = None
@@ -26,6 +37,7 @@ def monitor_window_changes():
         current_window_title = get_active_window_title()
         loggedUser = os.getlogin()
         if current_window_title != last_window_title and current_window_title:
+            check_time_last_window()
             insert_window_activity(loggedUser, current_window_title, program_name)
             last_window_title = current_window_title
         time.sleep(1)

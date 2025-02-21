@@ -17,7 +17,6 @@ server_url = data["server"]
 
 def run_sync():
     sync_window_activity_data()
-    sync_window_activity_data()
 
 # Recupera os dados de mouse não sincronizados e envia para o servidor
 def sync_activity_data():
@@ -30,7 +29,7 @@ def sync_activity_data():
     record_ids = []
 
     for record in records:
-        record_id, timestamp, logged_user, mouse_clicks, key_presses, mouse_scroll = record
+        timestamp, logged_user, mouse_clicks, key_presses, mouse_scroll = record
         data_batch.append({
             "Timestamp": timestamp,
             "LoggedUser": logged_user,
