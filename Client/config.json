@@ -2,5 +2,5 @@
     "db_name": "tap_tracker.db",
     "focus_time": 20,
     "break_time": 5,
-    "server": "http://localhost:8000/api/data"
+    "server": "http://localhost:8000"
 }

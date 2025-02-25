@@ -41,7 +41,7 @@ def sync_activity_data():
 
     try:
         print("Enviando registros de input para o servidor")
-        response = requests.post(server_url, json=data_batch)
+        response = requests.post(server_url + '/api/activity', json=data_batch)
         if response.status_code == 200:
             update_synced_activity(record_ids)
             print(f"{len(record_ids)} registros sincronizados")
