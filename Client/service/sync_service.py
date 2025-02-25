@@ -37,7 +37,7 @@ def sync_activity_data():
             "KeyPresses": key_presses,
             "MouseScroll": mouse_scroll
         })
-        record_ids.append(record_id)
+        record_ids.append(record)
 
     try:
         print("Enviando registros de input para o servidor")
