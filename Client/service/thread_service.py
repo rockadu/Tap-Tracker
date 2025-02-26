@@ -1,5 +1,5 @@
 from repository.input_activity_repository import ensure_minute_entry
-from service.sync_service import sync_activity_data
+from service.sync_service import run_sync
 import os
 import time
 
@@ -16,7 +16,7 @@ def ensure_cicle():
         
         # Verifica se passaram 15 segundos desde a última sincronização
         if time.time() - last_sync_time >= sync_interval:
-            sync_activity_data()
+            run_sync()
             last_sync_time = time.time()  # Atualiza o tempo da última sincronização
         
         time.sleep(1) 

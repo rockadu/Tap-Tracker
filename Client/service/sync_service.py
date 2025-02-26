@@ -16,6 +16,7 @@ with open("config.json", "r") as file:
 server_url = data["server"]
 
 def run_sync():
+    sync_activity_data()
     sync_window_activity_data()
 
 # Recupera os dados de mouse não sincronizados e envia para o servidor
@@ -37,7 +38,7 @@ def sync_activity_data():
             "KeyPresses": key_presses,
             "MouseScroll": mouse_scroll
         })
-        record_ids.append(record)
+        record_ids.append(timestamp)
 
     try:
         print("Enviando registros de input para o servidor")
@@ -68,18 +69,19 @@ def sync_window_activity_data():
     record_ids = []
 
     for record in records:
-        record_id, timestamp, logged_user, window_title, application_name = record
+        record_id, timestamp, logged_user, window_title, application_name, activity_duration = record
         data_batch.append({
             "Timestamp": timestamp,
             "LoggedUser": logged_user,
             "WindowTitle": window_title,
-            "ApplicationName": application_name
+            "ApplicationName": application_name,
+            "ActivityDuration": activity_duration
         })
         record_ids.append(record_id)
 
     try:
         print("Enviando registros de janela para o servidor")
-        response = requests.post(f"{server_url}/window-activity", json=data_batch)
+        response = requests.post(f"{server_url}/api/window-activity", json=data_batch)
         if response.status_code == 200:
             update_synced_window(record_ids)
             print(f"{len(record_ids)} registros de janela sincronizados.")

@@ -22,7 +22,7 @@ def get_window_activitys(size=10):
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT Id, StartTime, LoggedUser, WindowTitle, ProgramName
+        SELECT Id, StartTime, LoggedUser, WindowTitle, ProgramName, ActivityDuration
         FROM WindowActivity
         WHERE Sync = 0
         ORDER BY StartTime ASC

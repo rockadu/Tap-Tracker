@@ -35,7 +35,6 @@ def ensure_minute_entry(loggedUser):
 
     conn.commit()
     conn.close()
-    print("Novo registro criado")
 
 # Recupera do banco os eventos de input que ainda não foram sincronizados com o servidor
 def get_activitys(size = 10):
@@ -59,7 +58,7 @@ def get_activitys(size = 10):
 
 # Atualiza os eventos que foram sincronizados com o servidor
 def update_synced_activity(times):
-    print("Marcando eventos como sincronizados")
+    print(f"Marcando eventos como sincronizados {times}")
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.executemany("UPDATE ActivityCount SET Sync = 1 WHERE Timestamp = ?", [(time,) for time in times])
