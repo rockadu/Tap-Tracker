@@ -1,9 +1,9 @@
 from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
-from pydantic import BaseModel
+from typing import List, Optional
+from pydantic import BaseModel, Field
 from datetime import datetime, timedelta
-from typing import List
 from jose import jwt
 import uvicorn
 
@@ -32,12 +32,25 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 # Modelo para dados de atividade
 class ActivityData(BaseModel):
-    timestamp: str
-    mouse_clicks: int
-    key_presses: int
-    mouse_scroll: int
-    window_title: str
-    program_name: str
+    timestamp: str = Field(..., alias="Timestamp")
+    logged_user: str = Field(..., alias="LoggedUser")
+    mouse_clicks: int = Field(..., alias="MouseClicks")
+    key_presses: int = Field(..., alias="KeyPresses")
+    mouse_scroll: int = Field(..., alias="MouseScroll")
+    
+    class Config:
+        allow_population_by_field_name = True
+
+#Modelo para dados de atividade
+class WindowData(BaseModel):
+    timestamp: str = Field(..., alias="Timestamp")
+    logged_user: str = Field(..., alias="LoggedUser")
+    window_title: str = Field(..., alias="WindowTitle")
+    application_name: str = Field(..., alias="ApplicationName")
+    activity_duration: int = Field(..., alias="ActivityDuration")
+    
+    class Config:
+        allow_population_by_field_name = True
 
 # Função para autenticação de usuário
 def authenticate_user(username: str, password: str):
@@ -64,7 +77,13 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 # Endpoint para recebimento de dados de atividade
 @app.post("/api/activity")
-async def receive_activity(data: List[ActivityData], token: str = Depends(oauth2_scheme)):
+async def receive_activity(data: List[ActivityData]):
+    # Aqui será feita a validação e armazenamento no banco de dados
+    print("Dados recebidos:", data)
+    return {"status": "sucesso", "received": len(data)}
+
+@app.post("/api/window-activity")
+async def receive_activity(data: List[WindowData]):
     # Aqui será feita a validação e armazenamento no banco de dados
     print("Dados recebidos:", data)
     return {"status": "sucesso", "received": len(data)}
