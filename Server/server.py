@@ -2,10 +2,11 @@ from fastapi import FastAPI, HTTPException, Depends
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from typing import List, Optional
-from pydantic import BaseModel, Field
 from datetime import datetime, timedelta
 from jose import jwt
 import uvicorn
+
+from models import ActivityData, WindowData
 
 app = FastAPI()
 
@@ -29,28 +30,6 @@ mock_users = {
 }
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
-
-# Modelo para dados de atividade
-class ActivityData(BaseModel):
-    timestamp: str = Field(..., alias="Timestamp")
-    logged_user: str = Field(..., alias="LoggedUser")
-    mouse_clicks: int = Field(..., alias="MouseClicks")
-    key_presses: int = Field(..., alias="KeyPresses")
-    mouse_scroll: int = Field(..., alias="MouseScroll")
-    
-    class Config:
-        allow_population_by_field_name = True
-
-#Modelo para dados de atividade
-class WindowData(BaseModel):
-    timestamp: str = Field(..., alias="Timestamp")
-    logged_user: str = Field(..., alias="LoggedUser")
-    window_title: str = Field(..., alias="WindowTitle")
-    application_name: str = Field(..., alias="ApplicationName")
-    activity_duration: int = Field(..., alias="ActivityDuration")
-    
-    class Config:
-        allow_population_by_field_name = True
 
 # Função para autenticação de usuário
 def authenticate_user(username: str, password: str):

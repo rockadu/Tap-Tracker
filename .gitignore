@@ -1,4 +1,5 @@
 # Ignore the tap_tracker.db file in the Client directory
 Client/tap_tracker.db
 Client/repository/__pycache__/
+Client/service/__pycache__/
 Server/service/__pycache__/
