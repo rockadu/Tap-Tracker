@@ -19,11 +19,9 @@ def increment(type):
         
     conn.commit()
     conn.close()
-    print(f"Inserção de incremento para o evento {type} concluida")
 
 # Garante a existencia do minuto mesmo sem haver input
 def ensure_minute_entry(loggedUser):
-    print("Criando novo registro para novo minuto")
     conn = get_db_connection()
     cursor = conn.cursor()
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M")

@@ -9,7 +9,6 @@ db_name = data["db_name"]
 
 # Cria um conexão com o banco de dados local
 def get_db_connection():
-    print("Conectando na base e retornando para o solicitante")
     return sqlite3.connect(db_name)
 
 # Prepara a base de dados se ainda não existe

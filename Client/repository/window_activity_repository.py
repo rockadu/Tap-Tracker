@@ -24,7 +24,7 @@ def get_window_activitys(size=10):
     cursor.execute("""
         SELECT Id, StartTime, LoggedUser, WindowTitle, ProgramName, ActivityDuration
         FROM WindowActivity
-        WHERE Sync = 0
+        WHERE Sync = 0 AND ActivityDuration > 0
         ORDER BY StartTime ASC
         LIMIT ?
     """, (size,))

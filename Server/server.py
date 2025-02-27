@@ -6,7 +6,8 @@ from datetime import datetime, timedelta
 from jose import jwt
 import uvicorn
 
-from models import ActivityData, WindowData
+from models.activity_model import ActivityData
+from models.window_model import WindowData
 
 app = FastAPI()
 
