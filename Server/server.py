@@ -5,6 +5,7 @@ from typing import List, Optional
 from datetime import datetime, timedelta
 from jose import jwt
 import uvicorn
+from repository.repository import setup_database
 
 from models.activity_model import ActivityData
 from models.window_model import WindowData
@@ -14,39 +15,34 @@ app = FastAPI()
 # Habilitar CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Permitir todas as origens. Substitua por uma lista específica se necessário.
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Permitir todos os métodos (GET, POST, etc.)
-    allow_headers=["*"]   # Permitir todos os headers
+    allow_methods=["*"],
+    allow_headers=["*"]
 )
 
-# Configurações JWT
 SECRET_KEY = "secret-key-tap-tracker"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60
 
-# Mock de usuários (substituir pelo banco de dados depois)
 mock_users = {
     "admin": {"username": "admin", "password": "password"}
 }
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
-# Função para autenticação de usuário
 def authenticate_user(username: str, password: str):
     user = mock_users.get(username)
     if user and user["password"] == password:
         return user
     return None
 
-# Função para criar token JWT
 def create_access_token(data: dict, expires_delta: timedelta = None):
     to_encode = data.copy()
     expire = datetime.utcnow() + (expires_delta or timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES))
     to_encode.update({"exp": expire})
     return jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
 
-# Endpoint para login e geração de token
 @app.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)
@@ -55,23 +51,18 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     access_token = create_access_token({"sub": user["username"]})
     return {"access_token": access_token, "token_type": "bearer"}
 
-# Endpoint para recebimento de dados de atividade
 @app.post("/api/activity")
 async def receive_activity(data: List[ActivityData]):
-    # Aqui será feita a validação e armazenamento no banco de dados
     print("Dados recebidos:", data)
     return {"status": "sucesso", "received": len(data)}
 
 @app.post("/api/window-activity")
 async def receive_activity(data: List[WindowData]):
-    # Aqui será feita a validação e armazenamento no banco de dados
     print("Dados recebidos:", data)
     return {"status": "sucesso", "received": len(data)}
 
-# Endpoint para relatórios (a ser detalhado)
 @app.get("/api/reports")
 async def get_reports(token: str = Depends(oauth2_scheme)):
-    # Aqui será implementada a lógica de geração de relatórios
     return {"message": "Endpoint de relatórios em desenvolvimento"}
 
 @app.get("/")

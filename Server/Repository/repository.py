@@ -1,6 +1,7 @@
 import sqlite3
 from datetime import datetime
 import json
+import os
 
 with open("config.json", "r") as file:
     data = json.load(file)  
@@ -52,6 +53,9 @@ def setup_database():
         """)
         print("Tabela WindowActivity criada")
 
-    # Confirma as alterações e fecha a conexão
     db_connection.commit()
     db_connection.close()
+
+if os.path.exists(db_name) == False:
+    print("Base não encontrada, criando...")
+    setup_database()
