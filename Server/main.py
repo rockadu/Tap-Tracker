@@ -5,7 +5,7 @@ from typing import List, Optional
 from datetime import datetime, timedelta
 from jose import jwt
 import uvicorn
-from repository.repository import setup_database
+from Server.repository.base_repository import setup_database
 
 from models.activity_model import ActivityData
 from models.window_model import WindowData
