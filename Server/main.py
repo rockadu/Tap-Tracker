@@ -5,7 +5,9 @@ from typing import List, Optional
 from datetime import datetime, timedelta
 from jose import jwt
 import uvicorn
-from Server.repository.base_repository import setup_database
+from repository.base_repository import setup_database
+from service.input_service import insert_activity_data
+from service.window_activity_service import insert_window_data
 
 from models.activity_model import ActivityData
 from models.window_model import WindowData
@@ -23,7 +25,7 @@ app.add_middleware(
 
 SECRET_KEY = "secret-key-tap-tracker"
 ALGORITHM = "HS256"
-ACCESS_TOKEN_EXPIRE_MINUTES = 60
+ACCESS_TOKEN_EXPIRE_MINUTES = 60 
 
 mock_users = {
     "admin": {"username": "admin", "password": "password"}
@@ -54,11 +56,13 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 @app.post("/api/activity")
 async def receive_activity(data: List[ActivityData]):
     print("Dados recebidos:", data)
+    insert_activity_data(data)
     return {"status": "sucesso", "received": len(data)}
 
 @app.post("/api/window-activity")
 async def receive_activity(data: List[WindowData]):
     print("Dados recebidos:", data)
+    insert_window_data(data)
     return {"status": "sucesso", "received": len(data)}
 
 @app.get("/api/reports")

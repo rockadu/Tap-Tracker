@@ -29,12 +29,12 @@ def setup_database():
         print("Criando tabela ActivityCount")
         cursor.execute("""
             CREATE TABLE IF NOT EXISTS ActivityCount (
-                Timestamp TEXT PRIMARY KEY,
+                Id INTEGER PRIMARY KEY AUTOINCREMENT,
+                Timestamp TEXT,
                 LoggedUser TEXT,
                 MouseClicks INTEGER DEFAULT 0,
                 KeyPresses INTEGER DEFAULT 0,
-                MouseScroll INTEGER DEFAULT 0,
-                Sync INTEGER DEFAULT 0
+                MouseScroll INTEGER DEFAULT 0
             )
         """)
         print("Tabela ActivityCount criada")
@@ -47,8 +47,7 @@ def setup_database():
                 StartTime TEXT NOT NULL,
                 WindowTitle TEXT NOT NULL,
                 ProgramName TEXT NOT NULL,
-                ActivityDuration INTEGER DEFAULT 0,
-                Sync INTEGER DEFAULT 0
+                ActivityDuration INTEGER DEFAULT 0
             )
         """)
         print("Tabela WindowActivity criada")

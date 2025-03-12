@@ -11,8 +11,6 @@ def insert_window_data(window_list: List[WindowData]):
         cursor.executemany("""
             INSERT INTO WindowActivity (StartTime, LoggedUser, WindowTitle, ProgramName, ActivityDuration)
             VALUES (?, ?, ?, ?, ?)
-            ON CONFLICT(StartTime, LoggedUser, WindowTitle, ProgramName) DO UPDATE SET 
-                ActivityDuration = excluded.ActivityDuration
         """, [(window.timestamp, window.logged_user, window.window_title, window.application_name, window.activity_duration)
               for window in window_list])
 

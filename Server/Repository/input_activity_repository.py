@@ -10,10 +10,6 @@ def insert_activity_data(activity_list: List[ActivityData]):
         cursor.executemany("""
             INSERT INTO ActivityCount (Timestamp, LoggedUser, MouseClicks, KeyPresses, MouseScroll)
             VALUES (?, ?, ?, ?, ?)
-            ON CONFLICT(Timestamp) DO UPDATE SET 
-                MouseClicks = excluded.MouseClicks,
-                KeyPresses = excluded.KeyPresses,
-                MouseScroll = excluded.MouseScroll
         """, [(activity.timestamp, activity.logged_user, activity.mouse_clicks, activity.key_presses, activity.mouse_scroll)
               for activity in activity_list])
 
