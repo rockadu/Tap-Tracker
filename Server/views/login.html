@@ -175,10 +175,8 @@
                 if (response.ok) {
                     const data = await response.json();
                     alert('Login realizado com sucesso!');
-                    console.log('Token JWT:', data.access_token);
-                    // Armazenar o token em localStorage e redirecionar para a página de relatórios
-                    localStorage.setItem('token', data.access_token);
-                    window.location.href = '/reports.html';
+                    document.cookie = `access_token=${data.access_token}; path=/; max-age=3600; secure`;
+                    window.location.href = '/';
                 } else {
                     const errorData = await response.json();
                     errorDiv.textContent = errorData.detail || 'Erro ao fazer login.';
