@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>TapTracker - Login</title>
+
+    <!-- Custom fonts for this template-->
+    <link href="static/vendor/fontawesome-free/css/all.min.css" rel="stylesheet" type="text/css">
+    <link
+        href="https://fonts.googleapis.com/css?family=Nunito:200,200i,300,300i,400,400i,600,600i,700,700i,800,800i,900,900i"
+        rel="stylesheet">
+
+    <!-- Custom styles for this template-->
+    <link href="static/css/sb-admin-2.min.css" rel="stylesheet">
+
+</head>
+
+<body class="bg-gradient-primary">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-xl-10 col-lg-12 col-md-9">
+                <div class="card o-hidden border-0 shadow-lg my-5">
+                    <div class="card-body p-0">
+                        <div class="row">
+                            <div class="col-lg-6 d-none d-lg-block bg-login-image">
+                                <?xml version="1.0" encoding="UTF-8" standalone="no"?>
+                                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" width="500" height="500" viewBox="0 0 500 500">
+                                        <!-- Background Circle -->
+                                        <circle cx="250" cy="250" r="200" fill="#1E1E2E" stroke="#0FF" stroke-width="8"/>
+                                        
+                                        <!-- Radar Waves -->
+                                        <circle cx="250" cy="250" r="150" fill="none" stroke="#0FF" stroke-width="4" stroke-dasharray="10,10"/>
+                                        <circle cx="250" cy="250" r="100" fill="none" stroke="#0FF" stroke-width="4" stroke-dasharray="10,10"/>
+                                        <circle cx="250" cy="250" r="50" fill="none" stroke="#0FF" stroke-width="4" stroke-dasharray="10,10"/>
+                                        
+                                        <!-- Cursor Icon -->
+                                        <polygon points="220,180 280,300 260,280 230,310 220,280 250,250" fill="#0FF" stroke="#FFF" stroke-width="3"/>
+                                        
+                                        <!-- Keyboard Icon -->
+                                        <rect x="160" y="340" width="180" height="50" rx="10" ry="10" fill="#0FF" stroke="#FFF" stroke-width="3"/>
+                                        <line x1="170" y1="350" x2="330" y2="350" stroke="#FFF" stroke-width="3"/>
+                                        <line x1="170" y1="360" x2="330" y2="360" stroke="#FFF" stroke-width="3"/>
+                                        <line x1="170" y1="370" x2="330" y2="370" stroke="#FFF" stroke-width="3"/>
+                                        
+                                        <!-- Text -->
+                                        <text x="150" y="450" font-family="Orbitron, sans-serif" font-size="36" fill="#0FF">Tap Tracker</text>
+                                    </svg>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="p-5">
+                                    <form class="user">
+                                        <div class="form-group">
+                                            <input type="email" class="form-control form-control-user"
+                                                id="username" placeholder="Informe seu usuário...">
+                                        </div>
+                                        <div class="form-group">
+                                            <input type="password" class="form-control form-control-user"
+                                                id="password" placeholder="Informe sua senha...">
+                                        </div>
+                                        <div id="error" class="text-danger"></div>
+                                        <button onclick="login()" class="btn btn-primary btn-user btn-block">
+                                            Entrar
+                                        </a>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="static/vendor/jquery/jquery.min.js"></script>
+    <script src="static/vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+    <script src="static/vendor/jquery-easing/jquery.easing.min.js"></script>
+    <script src="static/js/sb-admin-2.min.js"></script>
+
+    <script>
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const errorDiv = document.getElementById('error');
+            errorDiv.textContent = '';
+
+            if (!username || !password) {
+                errorDiv.textContent = 'Por favor, preencha todos os campos.';
+                return;
+            }
+
+            try {
+                const response = await fetch('http://localhost:8000/token', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded'
+                    },
+                    body: new URLSearchParams({
+                        username: username,
+                        password: password
+                    })
+                });
+
+                if (response.ok) {
+                    const data = await response.json();
+                    alert('Login realizado com sucesso!');
+                    document.cookie = `access_token=${data.access_token}; path=/; max-age=3600; secure`;
+                    window.location.href = '/';
+                } else {
+                    const errorData = await response.json();
+                    errorDiv.textContent = errorData.detail || 'Erro ao fazer login.';
+                }
+            } catch (error) {
+                console.error('Erro na requisição:', error);
+                errorDiv.textContent = 'Erro ao conectar ao servidor.';
+            }
+        }
+    </script>
+</body>
+</html>

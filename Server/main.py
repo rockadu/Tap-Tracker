@@ -3,6 +3,7 @@ from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.staticfiles import StaticFiles
 from typing import List, Optional
 from datetime import datetime, timedelta
 from repository.base_repository import setup_database
@@ -28,11 +29,13 @@ app.add_middleware(
 SECRET_KEY = "secret-key-tap-tracker"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 
+static_path = os.path.abspath("www")
 
 mock_users = {
     "admin": {"username": "admin", "password": "password"}
 }
 
+app.mount("/static", StaticFiles(directory=static_path), name="static")
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 def verify_token(token: str):
@@ -78,7 +81,7 @@ async def get_reports(token: str = Depends(oauth2_scheme)):
 
 @app.get("/login")
 async def login_page():
-    login_path = os.path.join("views", "login.html")
+    login_path = os.path.join("www/views", "login.html")
     return FileResponse(login_path)
 
 @app.post("/token")
@@ -94,7 +97,7 @@ async def root(request: Request):
     token = request.cookies.get("access_token")
     if not token or not verify_token(token):
         return RedirectResponse(url="/login")
-    main_path = os.path.join("views", "main.html")
+    main_path = os.path.join("www/views", "index.html")
     return FileResponse(main_path)
 
 if __name__ == "__main__":
