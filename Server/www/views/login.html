@@ -109,7 +109,6 @@
 
                 if (response.ok) {
                     const data = await response.json();
-                    alert('Login realizado com sucesso!');
                     document.cookie = `access_token=${data.access_token}; path=/; max-age=3600; secure`;
                     window.location.href = '/';
                 } else {

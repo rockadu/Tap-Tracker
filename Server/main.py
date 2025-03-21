@@ -2,8 +2,9 @@ import os
 from fastapi import FastAPI, HTTPException, Depends, Request
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
+from fastapi.templating import Jinja2Templates
+from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse
 from typing import List, Optional
 from datetime import datetime, timedelta
 from repository.base_repository import setup_database
@@ -29,7 +30,9 @@ app.add_middleware(
 SECRET_KEY = "secret-key-tap-tracker"
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 60 
+
 static_path = os.path.abspath("www")
+templates = Jinja2Templates(directory="www/views")
 
 mock_users = {
     "admin": {"username": "admin", "password": "password"}
@@ -97,8 +100,7 @@ async def root(request: Request):
     token = request.cookies.get("access_token")
     if not token or not verify_token(token):
         return RedirectResponse(url="/login")
-    main_path = os.path.join("www/views", "index.html")
-    return FileResponse(main_path)
+    return templates.TemplateResponse("index.html", {"request": request})
 
 if __name__ == "__main__":
     uvicorn.run(app, host="localhost", port=8000)
