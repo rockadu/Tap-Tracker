@@ -1,4 +1,5 @@
 from repository.base_repository import get_db_connection
+from datetime import datetime, timedelta
 from models.window_model import WindowData
 from typing import List
 
@@ -20,3 +21,25 @@ def insert_window_data(window_list: List[WindowData]):
         print(f"Erro ao inserir dados de janela: {e}")
     finally:
         conn.close()
+
+def get_weekly_window_activity_count():
+    now = datetime.now()
+    start_of_week = now - timedelta(days=now.weekday())
+    start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    
+    try:
+        cursor.execute("""
+            SELECT COUNT(*) 
+            FROM WindowActivity 
+            WHERE StartTime >= ?
+        """, (start_of_week.strftime('%Y-%m-%d %H:%M:%S'),))
+
+        count = cursor.fetchone()[0]
+        conn.close()
+
+        return count
+    except Exception as e:
+        print(f"Erro ao obter contagem de janelas da semana: {e}")

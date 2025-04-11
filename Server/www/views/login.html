@@ -57,7 +57,7 @@
                                 <div class="p-5">
                                     <form class="user">
                                         <div class="form-group">
-                                            <input type="email" class="form-control form-control-user"
+                                            <input type="text" class="form-control form-control-user"
                                                 id="username" placeholder="Informe seu usuário...">
                                         </div>
                                         <div class="form-group">
@@ -104,13 +104,14 @@
                     body: new URLSearchParams({
                         username: username,
                         password: password
-                    })
+                    }),
+                    credentials: 'include' 
                 });
 
                 if (response.ok) {
-                    const data = await response.json();
-                    document.cookie = `access_token=${data.access_token}; path=/; max-age=3600; secure`;
                     window.location.href = '/';
+                } else if (response.status === 401) {
+                    errorDiv.textContent = 'Usuário ou senha inválidos.';
                 } else {
                     const errorData = await response.json();
                     errorDiv.textContent = errorData.detail || 'Erro ao fazer login.';
