@@ -32,7 +32,7 @@ def get_weekly_window_activity_count():
     
     try:
         cursor.execute("""
-            SELECT COUNT(*) 
+            SELECT COUNT(DISTINCT ProgramName) 
             FROM WindowActivity 
             WHERE StartTime >= ?
         """, (start_of_week.strftime('%Y-%m-%d %H:%M:%S'),))
@@ -65,3 +65,20 @@ def get_top_program_week():
     conn.close()
 
     return row
+
+def get_activity_by_program_week_count():
+    now = datetime.now()
+    start_datetime = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT ProgramName, SUM(ActivityDuration)
+        FROM WindowActivity
+        WHERE StartTime >= ?
+        GROUP BY ProgramName
+        ORDER BY SUM(ActivityDuration) DESC
+    """, (start_datetime.strftime('%Y-%m-%d %H:%M:%S'),))
+    
+    rows = cursor.fetchall()
+    conn.close()
+    return rows

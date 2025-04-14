@@ -8,8 +8,8 @@ from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse, JSON
 from typing import List, Optional
 from datetime import datetime, timedelta
 from repository.base_repository import setup_database
-from service.input_service import insert_activity_data, get_weekly_activity, get_active_users
-from service.window_activity_service import insert_window_data, get_weekly_window_activity
+from service.input_service import insert_activity_data, get_weekly_activity, get_active_users, get_interactions_today_grouped_by_minute
+from service.window_activity_service import insert_window_data, get_weekly_window_activity, get_top_program, get_activity_by_program_week
 from jose import jwt, JWTError
 import uvicorn
 
@@ -99,7 +99,7 @@ async def activity_count():
 
 @app.get("/api/top-program/week")
 async def activity_count():
-    result = get_weekly_window_activity()
+    result = get_top_program()
     return result
 
 @app.get("/api/active-users-count")
@@ -111,6 +111,16 @@ async def activity_count():
 async def activity_count():
     count = get_weekly_activity()
     return {"week_count": count}
+
+@app.get("/api/interaction-trend")
+async def activity_count():
+    data = get_interactions_today_grouped_by_minute()
+    return data
+
+@app.get("/api/applications-trend")
+async def activity_count():
+    data = get_activity_by_program_week()
+    return data
 
 @app.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
