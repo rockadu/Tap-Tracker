@@ -197,6 +197,9 @@
 </div>
 
 <script>
+    let graficoAtividades = null;
+    let graficoProgramas = null;
+
     async function carregarContadorSemanal() {
         try {
             const response = await fetch('/api/activity-count/week', {
@@ -284,77 +287,84 @@
                 const valores = data.map(item => item.total);
 
                 var ctx = document.getElementById("interactionTrendChart").getContext("2d");
-                new Chart(ctx, {
-                    type: 'line',
-                    data: {
-                        labels: labels,
-                        datasets: [{
-                            label: "Interações",
-                            lineTension: 0.2,
-                            backgroundColor: "rgba(78, 115, 223, 0.05)",
-                            borderColor: "rgba(78, 115, 223, 1)",
-                            pointRadius: 0,
-                            pointBackgroundColor: "rgba(78, 115, 223, 1)",
-                            pointBorderColor: "rgba(78, 115, 223, 1)",
-                            pointHoverRadius: 3,
-                            pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
-                            pointHoverBorderColor: "rgba(78, 115, 223, 1)",
-                            pointHitRadius: 10,
-                            pointBorderWidth: 2,
-                            data: valores,
-                        }],
-                    },
-                    options: {
-                        maintainAspectRatio: false,
-                        layout: {
-                            padding: { left: 10, right: 25, top: 25, bottom: 0 }
-                        },
-                        scales: {
-                            xAxes: [{
-                                time: { unit: 'minute' },
-                                gridLines: { display: false, drawBorder: false },
-                                ticks: { maxTicksLimit: 20 }
+
+                if (graficoAtividades) {
+                    graficoAtividades.data.labels = json.labels;
+                    graficoAtividades.data.datasets[0].data = json.data;
+                    graficoAtividades.update();
+                } else {
+                    graficoAtividades = new Chart(ctx, {
+                        type: 'line',
+                        data: {
+                            labels: labels,
+                            datasets: [{
+                                label: "Interações",
+                                lineTension: 0.2,
+                                backgroundColor: "rgba(78, 115, 223, 0.05)",
+                                borderColor: "rgba(78, 115, 223, 1)",
+                                pointRadius: 0,
+                                pointBackgroundColor: "rgba(78, 115, 223, 1)",
+                                pointBorderColor: "rgba(78, 115, 223, 1)",
+                                pointHoverRadius: 3,
+                                pointHoverBackgroundColor: "rgba(78, 115, 223, 1)",
+                                pointHoverBorderColor: "rgba(78, 115, 223, 1)",
+                                pointHitRadius: 10,
+                                pointBorderWidth: 2,
+                                data: valores,
                             }],
-                            yAxes: [{
-                                ticks: {
-                                    maxTicksLimit: 5,
-                                    padding: 10,
-                                    callback: function(value) {
-                                        return value + ' interações';
+                        },
+                        options: {
+                            maintainAspectRatio: false,
+                            layout: {
+                                padding: { left: 10, right: 25, top: 25, bottom: 0 }
+                            },
+                            scales: {
+                                xAxes: [{
+                                    time: { unit: 'minute' },
+                                    gridLines: { display: false, drawBorder: false },
+                                    ticks: { maxTicksLimit: 20 }
+                                }],
+                                yAxes: [{
+                                    ticks: {
+                                        maxTicksLimit: 5,
+                                        padding: 10,
+                                        callback: function(value) {
+                                            return value + ' interações';
+                                        }
+                                    },
+                                    gridLines: {
+                                        color: "rgb(234, 236, 244)",
+                                        zeroLineColor: "rgb(234, 236, 244)",
+                                        drawBorder: false,
+                                        borderDash: [2],
+                                        zeroLineBorderDash: [2]
                                     }
-                                },
-                                gridLines: {
-                                    color: "rgb(234, 236, 244)",
-                                    zeroLineColor: "rgb(234, 236, 244)",
-                                    drawBorder: false,
-                                    borderDash: [2],
-                                    zeroLineBorderDash: [2]
-                                }
-                            }],
-                        },
-                        legend: { display: false },
-                        tooltips: {
-                            backgroundColor: "rgb(255,255,255)",
-                            bodyFontColor: "#858796",
-                            titleMarginBottom: 10,
-                            titleFontColor: '#6e707e',
-                            titleFontSize: 14,
-                            borderColor: '#dddfeb',
-                            borderWidth: 1,
-                            xPadding: 15,
-                            yPadding: 15,
-                            displayColors: false,
-                            intersect: false,
-                            mode: 'index',
-                            caretPadding: 10,
-                            callbacks: {
-                                label: function(tooltipItem, chart) {
-                                    return "Interações: " + tooltipItem.yLabel;
+                                }],
+                            },
+                            legend: { display: false },
+                            tooltips: {
+                                backgroundColor: "rgb(255,255,255)",
+                                bodyFontColor: "#858796",
+                                titleMarginBottom: 10,
+                                titleFontColor: '#6e707e',
+                                titleFontSize: 14,
+                                borderColor: '#dddfeb',
+                                borderWidth: 1,
+                                xPadding: 15,
+                                yPadding: 15,
+                                displayColors: false,
+                                intersect: false,
+                                mode: 'index',
+                                caretPadding: 10,
+                                callbacks: {
+                                    label: function(tooltipItem, chart) {
+                                        return "Interações: " + tooltipItem.yLabel;
+                                    }
                                 }
                             }
                         }
-                    }
-                });
+                    });
+                }
             }
         } catch (error) {
             console.error("Erro ao carregar gráfico:", error);
@@ -372,35 +382,42 @@
                 const json = await response.json();
 
                 var ctx = document.getElementById("applications-trend-pie-chart").getContext("2d");
-                new Chart(ctx, {
-                    type: 'doughnut',
-                    data: {
-                        labels: json.labels,
-                        datasets: [{
-                            data: json.data,
-                            backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#5a5c69'],
-                            hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#f4b619', '#be2617', '#6c757d', '#343a40'],
-                            hoverBorderColor: "rgba(234, 236, 244, 1)",
-                        }],
-                    },
-                    options: {
-                        maintainAspectRatio: false,
-                        tooltips: {
-                            backgroundColor: "rgb(255,255,255)",
-                            bodyFontColor: "#858796",
-                            borderColor: '#dddfeb',
-                            borderWidth: 1,
-                            xPadding: 15,
-                            yPadding: 15,
-                            displayColors: false,
-                            caretPadding: 10,
+
+                if(graficoProgramas) {
+                    graficoProgramas.data.labels = json.labels;
+                    graficoProgramas.data.datasets[0].data = json.data;
+                    graficoProgramas.update();
+                } else {
+                    graficoProgramas = new Chart(ctx, {
+                        type: 'doughnut',
+                        data: {
+                            labels: json.labels,
+                            datasets: [{
+                                data: json.data,
+                                backgroundColor: ['#4e73df', '#1cc88a', '#36b9cc', '#f6c23e', '#e74a3b', '#858796', '#5a5c69'],
+                                hoverBackgroundColor: ['#2e59d9', '#17a673', '#2c9faf', '#f4b619', '#be2617', '#6c757d', '#343a40'],
+                                hoverBorderColor: "rgba(234, 236, 244, 1)",
+                            }],
                         },
-                        legend: {
-                            display: false
+                        options: {
+                            maintainAspectRatio: false,
+                            tooltips: {
+                                backgroundColor: "rgb(255,255,255)",
+                                bodyFontColor: "#858796",
+                                borderColor: '#dddfeb',
+                                borderWidth: 1,
+                                xPadding: 15,
+                                yPadding: 15,
+                                displayColors: false,
+                                caretPadding: 10,
+                            },
+                            legend: {
+                                display: false
+                            },
+                            cutoutPercentage: 80,
                         },
-                        cutoutPercentage: 80,
-                    },
-                });
+                    });
+                }
             }
         } catch (error) {
             console.error("Erro ao carregar gráfico de atividades por programa:", error);
@@ -421,7 +438,7 @@
         carregarContadorUsuarios();
         carregarTopPrograma();
         carregarGraficoInteracoes();
-    }, 60000);
+    }, 2000);
 </script>
 
 {% endblock content %}
