@@ -97,6 +97,11 @@ async def activity_count():
     count = get_weekly_window_activity()
     return {"week_window_count": count}
 
+@app.get("/api/top-program/week")
+async def activity_count():
+    result = get_weekly_window_activity()
+    return result
+
 @app.get("/api/active-users-count")
 async def activity_count():
     count = get_active_users()

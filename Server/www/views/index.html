@@ -75,8 +75,8 @@
                 <div class="row no-gutters align-items-center">
                     <div class="col mr-2">
                         <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
-                            Pending Requests</div>
-                        <div class="h5 mb-0 font-weight-bold text-gray-800">18</div>
+                            Top programa</div>
+                        <div class="h5 mb-0 font-weight-bold text-gray-800" id="top-program-week">Carregando...</div>
                     </div>
                     <div class="col-auto">
                         <i class="fas fa-comments fa-2x text-gray-300"></i>
@@ -365,10 +365,32 @@
             console.error('Erro na requisição das janelas:', error);
         }
     }
+
+    async function carregarTopPrograma() {
+        try {
+            const response = await fetch('/api/top-program/week', {
+                method: 'GET',
+                credentials: 'include'
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                console.log(data);
+                //document.getElementById('active_users_count').textContent = data.users_count;
+            } else {
+                console.error('Erro ao buscar contador de janelas:', response.status);
+            }
+        } catch (error) {
+            console.error('Erro na requisição das janelas:', error);
+        }
+    }
     // Chama ao carregar a página
     window.addEventListener('DOMContentLoaded', carregarContadorSemanal);
     window.addEventListener('DOMContentLoaded', carregarContadorJanelas);
     window.addEventListener('DOMContentLoaded', carregarContadorUsuarios);
+    window.addEventListener('DOMContentLoaded', carregarTopPrograma);
 </script>
+
+top-program-week
 
 {% endblock content %}

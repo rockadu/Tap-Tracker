@@ -43,3 +43,25 @@ def get_weekly_window_activity_count():
         return count
     except Exception as e:
         print(f"Erro ao obter contagem de janelas da semana: {e}")
+
+
+def get_top_program_week():
+    now = datetime.now()
+    start_of_week = now - timedelta(days=now.weekday())
+    start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
+
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT ProgramName, SUM(ActivityDuration) as TotalDuration
+        FROM WindowActivity
+        WHERE StartTime >= ?
+        GROUP BY ProgramName
+        ORDER BY TotalDuration DESC
+        LIMIT 1
+    """, (start_of_week.strftime('%Y-%m-%d %H:%M:%S'),))
+
+    row = cursor.fetchone()
+    conn.close()
+
+    return row
