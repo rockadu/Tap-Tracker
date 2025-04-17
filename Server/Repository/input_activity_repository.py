@@ -1,10 +1,10 @@
-from repository.base_repository import get_db_connection
+import repository.base_repository as base_repo
 from models.activity_model import ActivityData
 from datetime import datetime, timedelta
 from typing import List
 
 def insert_activity_data(activity_list: List[ActivityData]):
-    conn = get_db_connection()
+    conn = base_repo.get_db_connection()
     cursor = conn.cursor()
 
     try:
@@ -26,7 +26,7 @@ def get_weekly_activity_count():
     start_of_week = now - timedelta(days=now.weekday())
     start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    conn = get_db_connection()
+    conn = base_repo.get_db_connection()
     cursor = conn.cursor()
 
     try:
@@ -48,7 +48,7 @@ def get_active_users_count():
     now = datetime.now()
     two_minutes_ago = now - timedelta(minutes=2)
 
-    conn = get_db_connection()
+    conn = base_repo.get_db_connection()
     cursor = conn.cursor()
 
     try:
@@ -71,7 +71,7 @@ def get_interactions_today_grouped_by_minute_count():
     now = datetime.now()
     start_datetime = now.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    conn = get_db_connection()
+    conn = base_repo.get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
         SELECT Timestamp, 
@@ -84,3 +84,19 @@ def get_interactions_today_grouped_by_minute_count():
     rows = cursor.fetchall()
     conn.close()
     return rows
+
+def get_total_interactions_by_user():
+    now = datetime.now()
+    start_datetime = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    conn = base_repo.get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT LoggedUser, SUM(MouseClicks + KeyPresses + MouseScroll)
+        FROM ActivityCount
+        WHERE Timestamp >= ?
+        GROUP BY LoggedUser
+    """, (start_datetime.strftime('%Y-%m-%d %H:%M'),))
+    result = cursor.fetchall()
+    conn.close()
+    return dict(result)

@@ -1,11 +1,11 @@
-from repository.base_repository import get_db_connection
+import repository.base_repository as base_repo
 from datetime import datetime, timedelta
 from models.window_model import WindowData
 from typing import List
 
 def insert_window_data(window_list: List[WindowData]):
     """Insere uma lista de objetos WindowData no banco de dados"""
-    conn = get_db_connection()
+    conn = base_repo.get_db_connection()
     cursor = conn.cursor()
 
     try:
@@ -27,7 +27,7 @@ def get_weekly_window_activity_count():
     start_of_week = now - timedelta(days=now.weekday())
     start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    conn = get_db_connection()
+    conn = base_repo.get_db_connection()
     cursor = conn.cursor()
     
     try:
@@ -50,7 +50,7 @@ def get_top_program_week():
     start_of_week = now - timedelta(days=now.weekday())
     start_of_week = start_of_week.replace(hour=0, minute=0, second=0, microsecond=0)
 
-    conn = get_db_connection()
+    conn = base_repo.get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
         SELECT ProgramName, SUM(ActivityDuration) as TotalDuration
@@ -69,7 +69,7 @@ def get_top_program_week():
 def get_activity_by_program_week_count():
     now = datetime.now()
     start_datetime = now.replace(hour=0, minute=0, second=0, microsecond=0)
-    conn = get_db_connection()
+    conn = base_repo.get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
         SELECT ProgramName, SUM(ActivityDuration)
@@ -82,3 +82,19 @@ def get_activity_by_program_week_count():
     rows = cursor.fetchall()
     conn.close()
     return rows
+
+def get_total_duration_by_user():
+    now = datetime.now()
+    start_datetime = now.replace(hour=0, minute=0, second=0, microsecond=0)
+    
+    conn = get_db_connection()
+    cursor = conn.cursor()
+    cursor.execute("""
+        SELECT LoggedUser, SUM(ActivityDuration)
+        FROM WindowActivity
+        WHERE StartTime >= ?
+        GROUP BY LoggedUser
+    """, (start_datetime.strftime('%Y-%m-%d %H:%M:%S'),))
+    result = cursor.fetchall()
+    conn.close()
+    return dict(result)
