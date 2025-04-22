@@ -1,6 +1,5 @@
 from repository.db_repository import get_db_connection
-
-from datetime import datetime
+from datetime import datetime, timedelta
 
 # Incrementa em 1 o evento (Mouse/Scroll/Tecla) sensorizado
 def increment(type):
@@ -35,9 +34,9 @@ def ensure_minute_entry(loggedUser):
     conn.close()
 
 # Recupera do banco os eventos de input que ainda não foram sincronizados com o servidor
-def get_activitys(size = 10):
+def get_activitys(size = 100):
     print("Recuperando eventos para sincronizar com servidor")
-    current_minute = datetime.now().replace(second=0, microsecond=0)
+    cutoff_minute = (datetime.now() - timedelta(minutes=1)).replace(second=0, microsecond=0)
     conn = get_db_connection()
     cursor = conn.cursor()
     cursor.execute("""
@@ -47,7 +46,7 @@ def get_activitys(size = 10):
             AND Timestamp < ?
             ORDER BY Timestamp ASC 
             LIMIT ?
-        """, (current_minute, size))
+        """, (cutoff_minute, size))
     records = cursor.fetchall()
     conn.commit()
     conn.close()

@@ -4,18 +4,18 @@ from pynput import mouse, keyboard
 # Aciona o sensor de click
 def on_click(x, y, button, pressed):
     if pressed:
-        print("Click detectado")
         increment('MouseClicks')
 
 # Aciona o sensor de scroll
 def on_scroll(x, y, dx, dy):
-        print("Scroll detectado")
+    try:
         increment("MouseScroll")
-
+    except Exception as e:
+        print(f"Erro ao salvar entrada: {e}")
+        
 # Aciona o sensor de tecla
 def on_press(key):
     try:
-        print("Tecla detectada")
         increment('KeyPresses')
     except Exception as e:
         print(f"Erro ao salvar entrada: {e}")

@@ -230,7 +230,6 @@
 
             if (response.ok) {
                 const data = await response.json();
-                console.log(data);
                 document.getElementById('top-program-week').textContent = data.program;
                 document.getElementById('top-program-time').textContent = Math.floor(data.duration_minutes / 60);
             } else {
@@ -253,11 +252,12 @@
                 const labels = data.map(item => item.timestamp.slice(11)); // Exibe só HH:mm
                 const valores = data.map(item => item.total);
 
-                var ctx = document.getElementById("interactionTrendChart").getContext("2d");
+                const canvas = document.getElementById("interactionTrendChart");
+                const ctx = canvas.getContext("2d");
 
                 if (graficoAtividades) {
-                    graficoAtividades.data.labels = json.labels;
-                    graficoAtividades.data.datasets[0].data = json.data;
+                    graficoAtividades.data.labels = labels;
+                    graficoAtividades.data.datasets[0].data = valores;
                     graficoAtividades.update();
                 } else {
                     graficoAtividades = new Chart(ctx, {
@@ -404,6 +404,7 @@
         carregarContadorUsuarios();
         carregarTopPrograma();
         carregarGraficoInteracoes();
+        carregarGraficoPizza();
     }, 10000);
 </script>
 

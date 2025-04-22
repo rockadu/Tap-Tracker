@@ -8,6 +8,7 @@ cursor = db_connection.cursor()
 
 # Exibir registros da tabela ActivityCount
 print("Registros da tabela ActivityCount:")
+##cursor.execute("UPDATE ActivityCount SET Sync = 0")
 cursor.execute("SELECT * FROM ActivityCount")
 activity_count_rows = cursor.fetchall()
 for row in activity_count_rows:
@@ -20,5 +21,5 @@ window_activity_rows = cursor.fetchall()
 for row in window_activity_rows:
     print(row)
 
-# Fechar a conexão
+##Fechar a conexão
 db_connection.close()

@@ -33,13 +33,19 @@ def check_time_last_window():
 def monitor_window_changes():
     last_window_title = None
     while True:
-        program_name = get_active_window_program()
-        current_window_title = get_active_window_title()
-        loggedUser = os.getlogin()
-        if current_window_title != last_window_title and current_window_title:
-            check_time_last_window()
-            insert_window_activity(loggedUser, current_window_title, program_name)
-            last_window_title = current_window_title
+        try:
+            program_name = get_active_window_program()
+            current_window_title = get_active_window_title()
+            loggedUser = os.getlogin()
+
+            if current_window_title != last_window_title and current_window_title:
+                check_time_last_window()
+                insert_window_activity(loggedUser, current_window_title, program_name)
+                last_window_title = current_window_title
+
+        except Exception as e:
+            print(f"[ERRO monitor_window_changes] {e}")
+
         time.sleep(1)
 
 # Inicia uma thread para monitorar a mudança de janela
