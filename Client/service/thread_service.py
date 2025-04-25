@@ -1,5 +1,7 @@
-from repository.input_activity_repository import ensure_minute_entry
+from datetime import datetime
+import repository.input_activity_repository as input_repository
 from service.sync_service import run_sync
+import service.buffer_event_service as buffer
 import os
 import time
 
@@ -12,8 +14,12 @@ def ensure_cicle():
     sync_interval = 15  # Intervalo em segundos para sincronização
 
     while running:
-        ensure_minute_entry(loggedUser)
+        now = datetime.now()
         
+        if now.second == 0:  # Chegou início de um novo minuto
+            data = buffer.flush_buffer()
+            input_repository.save_buffered_events(data)
+            
         # Verifica se passaram 15 segundos desde a última sincronização
         if time.time() - last_sync_time >= sync_interval:
             run_sync()

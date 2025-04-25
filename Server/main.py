@@ -8,8 +8,9 @@ from fastapi.responses import FileResponse, RedirectResponse, HTMLResponse, JSON
 from typing import List, Optional
 from datetime import datetime, timedelta
 from repository.base_repository import setup_database
-from service.input_service import insert_activity_data, get_weekly_activity, get_active_users, get_interactions_today_grouped_by_minute
-from service.window_activity_service import insert_window_data, get_weekly_window_activity, get_top_program, get_activity_by_program_week
+import service.input_service as input_service
+import service.window_activity_service as window_activity_service
+import service.dashboard_service as dashboard_service
 from jose import jwt, JWTError
 import uvicorn
 
@@ -74,13 +75,13 @@ def create_access_token(data: dict, expires_delta: timedelta = None):
 @app.post("/api/activity")
 async def receive_activity(data: List[ActivityData]):
     print("Dados recebidos:", data)
-    insert_activity_data(data)
+    input_service.insert_activity_data(data)
     return {"status": "sucesso", "received": len(data)}
 
 @app.post("/api/window-activity")
 async def receive_activity(data: List[WindowData]):
     print("Dados recebidos:", data)
-    insert_window_data(data)
+    window_activity_service.insert_window_data(data)
     return {"status": "sucesso", "received": len(data)}
 
 @app.get("/api/reports")
@@ -94,33 +95,47 @@ async def login_page():
 
 @app.get("/api/window-activity-count/week")
 async def activity_count():
-    count = get_weekly_window_activity()
+    count = window_activity_service.get_weekly_window_activity()
     return {"week_window_count": count}
 
 @app.get("/api/top-program/week")
 async def activity_count():
-    result = get_top_program()
+    result = window_activity_service.get_top_program()
     return result
 
 @app.get("/api/active-users-count")
 async def activity_count():
-    count = get_active_users()
+    count = input_service.get_active_users()
     return {"users_count": count}
 
 @app.get("/api/activity-count/week")
 async def activity_count():
-    count = get_weekly_activity()
+    count = input_service.get_weekly_activity()
     return {"week_count": count}
 
 @app.get("/api/interaction-trend")
 async def activity_count():
-    data = get_interactions_today_grouped_by_minute()
+    data = input_service.get_interactions_today_grouped_by_minute()
     return data
 
 @app.get("/api/applications-trend")
 async def activity_count():
-    data = get_activity_by_program_week()
+    data = window_activity_service.get_activity_by_program_week()
     return data
+
+@app.get("/api/users-summary")
+async def users_summary():
+    data = dashboard_service.summary_user_list()
+    return [
+        {
+            "usuario": row[0],
+            "total_dia": row[1],
+            "ultima_hora": row[2],
+            "ultimos_15min": row[3],
+            "ativo": row[4],
+            "ultimo_programa": row[5]
+        } for row in data
+    ]
 
 @app.post("/token")
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):

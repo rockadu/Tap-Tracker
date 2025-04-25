@@ -14,12 +14,12 @@ activity_count_rows = cursor.fetchall()
 for row in activity_count_rows:
     print(row)
 
-print("\nRegistros da tabela WindowActivity:")
-# Exibir registros da tabela WindowActivity
-cursor.execute("SELECT * FROM WindowActivity")
-window_activity_rows = cursor.fetchall()
-for row in window_activity_rows:
-    print(row)
+# print("\nRegistros da tabela WindowActivity:")
+# # Exibir registros da tabela WindowActivity
+# cursor.execute("SELECT * FROM WindowActivity")
+# window_activity_rows = cursor.fetchall()
+# for row in window_activity_rows:
+#     print(row)
 
 ##Fechar a conexão
 db_connection.close()

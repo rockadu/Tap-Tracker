@@ -9,7 +9,12 @@ db_name = data["db_name"]
 
 # Cria um conexão com o banco de dados local
 def get_db_connection():
-    return sqlite3.connect(db_name)
+    conn = sqlite3.connect(db_name,
+                           timeout=30, # espera até 30s por lock
+                           check_same_thread=False)
+    conn.execute("PRAGMA journal_mode=WAL;") # modo Write-Ahead Logging
+    conn.execute("PRAGMA busy_timeout = 5000;") # até 5s antes de falhar
+    return conn
 
 # Prepara a base de dados se ainda não existe
 def setup_database():
