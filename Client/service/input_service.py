@@ -1,52 +1,55 @@
 import datetime
-import os
 import threading
-from repository.input_activity_repository import increment 
 import service.buffer_event_service as buffer
 from pynput import mouse, keyboard
+import crosscutting.user_crosscutting as user
 
-logged_user = os.getlogin()
+# ——— Callbacks —————
 
-# Aciona o sensor de click
+logged_user = user.get_user()
+
 def on_click(x, y, button, pressed):
-    try:
-        if pressed:
+    if pressed:
+        try:
             buffer.add_input_event('MouseClicks', logged_user)
-    except Exception as e:
-        print(f"Erro ao salvar entrada: {e}")
+        except Exception as e:
+            print(f"Erro ao salvar click: {e}")
 
-# Lock dedicado para checar/atualizar o último scroll
 _scroll_lock = threading.Lock()
-# Guarda datetime do último scroll por usuário
 _last_scroll_time: dict[str, datetime.datetime] = {}
 
-# Aciona o sensor de scroll
 def on_scroll(x, y, dx, dy):
-    try:
-        now = datetime.datetime.now()
-        with _scroll_lock:
-            prev = _last_scroll_time.get(logged_user)
-            # se nunca scrollou ou já passou >= 1s, aceita; senão ignora
-            if prev is None or (now - prev).seconds >= 1:
-                buffer.add_input_event("MouseScroll", logged_user)
-                _last_scroll_time[logged_user] = now
-            # else: descarta scroll extra no mesmo segundo
-    except Exception as e:
-        print(f"Erro ao salvar entrada: {e}")
-        
-# Aciona o sensor de tecla
-def on_press(key):
-    try:
-        buffer.add_input_event('KeyPresses', logged_user)
-    except Exception as e:
-        print(f"Erro ao salvar entrada: {e}")
+    now = datetime.datetime.now()
+    with _scroll_lock:
+        prev = _last_scroll_time.get(logged_user)
+        if prev is None or (now - prev).seconds >= 1:
+            try:
+                buffer.add_input_event('MouseScroll', logged_user)
+            except Exception as e:
+                print(f"Erro ao salvar scroll: {e}")
+            _last_scroll_time[logged_user] = now
 
-# Inicia os sensores de input
-def start_moviment_listners():
+pressed_keys: set[keyboard.Key] = set()
+
+def on_press(key):
+    if key not in pressed_keys:
+        pressed_keys.add(key)
+        try:
+            buffer.add_input_event('KeyPresses', logged_user)
+        except Exception as e:
+            print(f"Erro ao salvar keypress: {e}")
+
+def on_release(key):
+    pressed_keys.discard(key)
+
+# ——— Startup dos listeners —————
+
+def start_input_listeners():
     print("Iniciando sensores de input")
-    mouse_listener = mouse.Listener(on_click=on_click, on_scroll=on_scroll)
-    keyboard_listener = keyboard.Listener(on_press=on_press)
-    
-    mouse_listener.start()
-    keyboard_listener.start()
-    print("Sensores de input iniciado")
+    k_listener = keyboard.Listener(on_press=on_press, on_release=on_release)
+    m_listener = mouse.Listener(on_click=on_click, on_scroll=on_scroll)
+    k_listener.start()
+    m_listener.start()
+    # mantém o programa rodando
+    k_listener.join()
+    m_listener.join()

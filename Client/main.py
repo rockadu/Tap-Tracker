@@ -1,4 +1,4 @@
-from service.input_service import start_moviment_listners
+from service.input_service import start_input_listeners
 from service.thread_service import ensure_cicle, running
 from service.window_service import start_window_monitor
 from service.sync_service import run_sync
@@ -7,7 +7,7 @@ import time
 
 def start_monitoring():
     start_window_monitor()
-    start_moviment_listners()
+    start_input_listeners()
 
 if __name__ == "__main__":
     try:

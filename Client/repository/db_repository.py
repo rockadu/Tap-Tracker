@@ -1,11 +1,8 @@
+import crosscutting.json_crosscutting as json
 import sqlite3
-import json
 import os
 
-with open("config.json", "r") as file:
-    data = json.load(file)  
-
-db_name = data["db_name"]
+db_name = json.get_app_config()["db_name"]
 
 # Cria um conexão com o banco de dados local
 def get_db_connection():

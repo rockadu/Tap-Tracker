@@ -1,5 +1,6 @@
 from repository.window_activity_repository import insert_window_activity, get_last_window_activity, update_duration_lastWindow_activity
 from datetime import datetime
+import crosscutting.user_crosscutting as user
 import win32gui
 import win32process
 import psutil
@@ -36,7 +37,7 @@ def monitor_window_changes():
         try:
             program_name = get_active_window_program()
             current_window_title = get_active_window_title()
-            loggedUser = os.getlogin()
+            loggedUser = user.get_user()
 
             if current_window_title != last_window_title and current_window_title:
                 check_time_last_window()
